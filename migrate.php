@@ -162,6 +162,16 @@ class MigrationController
         }
     }
 
+    private function createMigrationsTable()
+    {
+        $this->connection->exec("
+            CREATE TABLE migrations (
+                id INT(11) AUTO_INCREMENT PRIMARY KEY,
+                migration VARCHAR(255) NOT NULL
+            )
+        ");
+    }
+
     private function getExecutedMigrations(): array
     {
         try {
@@ -171,12 +181,7 @@ class MigrationController
         } catch (\PDOException $th) {
             $exception_code_for_base_table_or_view_not_found = '42S02';
             if($th->getCode() == $exception_code_for_base_table_or_view_not_found) {
-                $this->connection->exec("
-                    CREATE TABLE migrations (
-                        id INT(11) AUTO_INCREMENT PRIMARY KEY,
-                        migration VARCHAR(255) NOT NULL
-                    )
-                ");
+                $this->createMigrationsTable();
                 return [];
             } else {
                 throw $th;
@@ -192,8 +197,18 @@ class MigrationController
 
     private function removeExecutedMigration(string $migration)
     {
-        $stmt = $this->connection->prepare("DELETE FROM migrations WHERE migration = ?");
-        $stmt->execute([$migration]);
+        try {
+            $stmt = $this->connection->prepare("DELETE FROM migrations WHERE migration = ?");
+            $stmt->execute([$migration]);
+        } catch (\PDOException $th) {
+            $exception_code_for_base_table_or_view_not_found = '42S02';
+            if($th->getCode() == $exception_code_for_base_table_or_view_not_found) {
+                $this->createMigrationsTable();
+                $this->removeExecutedMigration($migration);
+            } else {
+                throw $th;
+            }
+        }
     }
 }
 
