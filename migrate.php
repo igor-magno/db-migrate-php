@@ -2,19 +2,30 @@
 
 class MigrationController
 {
-    private $host = 'XXXXXXXXXX';
-    private $dbname = 'XXXXXXXXXXX';
-    private $username = 'XXXXXXXXXXX';
-    private $password = 'XXXXXXXXXXX';
+    private $host;
+    private $dbport;
+    private $dbname;
+    private $username;
+    private $password;
     private $connection;
 
     public function __construct()
     {
         echo "\033[34m ________ MIGRATE ________\033[0m\n";
 
+        $this->host = getenv('DATA_BASE_HOST');
+        $this->dbport = getenv('DATA_BASE_PORT');
+        $this->dbname = getenv('DATA_BASE_NAME');
+        $this->username = getenv('DATA_BASE_USER');
+        $this->password = getenv('DATA_BASE_PASSWORD');
+
         try {
             echo "\033[32mConnecting to database...\033[0m\n";
-            $this->connection = new \PDO("mysql:host=$this->host;dbname=$this->dbname", $this->username, $this->password);
+            $this->connection = new \PDO(
+                "mysql:host=$this->host;port=$this->dbport;dbname=$this->dbname",
+                $this->username,
+                $this->password
+            );
             $this->connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
             echo "\033[32mConnected to database successfully!\033[0m\n";
         } catch (\PDOException $e) {
