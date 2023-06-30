@@ -1,8 +1,5 @@
 {
-    "name": "db-migrate-php/db-migrate-php",
+    "name": "igor-magno/db-migrate-php",
     "description": "",
-    "require": {
-        "php": ">=7.4",
-        "another-vendor/package": "1.*"
-    }
+    "require": {}
 }
