@@ -169,8 +169,8 @@ class MigrationController
             $stmt->execute();
             return $stmt->fetchAll(\PDO::FETCH_COLUMN);
         } catch (\PDOException $th) {
-            $exetio_code_for_base_table_or_view_not_found = '42S02';
-            if($th->getCode() == $exetio_code_for_base_table_or_view_not_found) {
+            $exception_code_for_base_table_or_view_not_found = '42S02';
+            if($th->getCode() == $exception_code_for_base_table_or_view_not_found) {
                 $this->connection->exec("
                     CREATE TABLE migrations (
                         id INT(11) AUTO_INCREMENT PRIMARY KEY,
